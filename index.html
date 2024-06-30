@@ -1,0 +1,97 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis - IMDb Review Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 600px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+            font-size: 14px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            text-align: left;
+        }
+        #score {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sentiment Analysis - IMDb Review Test</h1>
+        <textarea id="textInput" placeholder="Enter your review here..."></textarea>
+        <br>
+        <button onclick="analyzeSentiment()">Analyze Sentiment</button>
+        <div class="result" id="result"></div>
+        <div class="result" id="score"></div>
+    </div>
+    <script>
+        async function analyzeSentiment() {
+            const text = document.getElementById('textInput').value;
+            const response = await fetch('http://127.0.0.1:5000/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: text })
+            });
+            const data = await response.json();
+            document.getElementById('result').textContent = `The % of sentiment is: ${data.prediction}`;
+            const prediction = data.prediction; //
+
+            // Round the prediction value to two decimal places
+            const roundedPrediction = Math.round(prediction * 100) / 100;
+
+            // Determine sentiment label based on the rounded prediction
+            let sentimentLabel;
+            if (roundedPrediction >= 0.6) {
+                sentimentLabel = 'Positive';
+            } else {
+                sentimentLabel = 'Negative';
+            }
+            document.getElementById('score').textContent = `The sentiment is: ${sentimentLabel} (${roundedPrediction})`;
+        }
+    </script>
+</body>
+</html>
